@@ -46,16 +46,24 @@
         return _torTempDirPath;
     }
     
+    NSString *documentsDirectoryPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+    NSString *path = [documentsDirectoryPath stringByAppendingPathComponent:@"tor"];
+    
+    /*
     // Create a new temporary directory
     NSError *error = nil;
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
     NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:guid];
     
+     
+    NSError *error;
     [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:NO attributes:nil error:&error];
     if (error == nil) {
         _torTempDirPath = path;
     }
+    */
     
+    _torTempDirPath = path;
     return _torTempDirPath;
 }
 
