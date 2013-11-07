@@ -44,6 +44,7 @@
 		542FFEAD1800CB3D003B83B7 /* CPASocketManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 542FFE7E1800CA12003B83B7 /* CPASocketManager.h */; };
 		542FFEAE1800CB3D003B83B7 /* CPAThread.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 542FFE801800CA12003B83B7 /* CPAThread.h */; };
 		542FFF4D1800CEDF003B83B7 /* CPAProxyManager+TorCommands.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 542FFE7A1800CA12003B83B7 /* CPAProxyManager+TorCommands.h */; };
+		F78C4DD7182B9A5900C6D19C /* CPAHiddenService.m in Sources */ = {isa = PBXBuildFile; fileRef = F78C4DD6182B9A5900C6D19C /* CPAHiddenService.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -185,6 +186,8 @@
 		542FFE941800CA28003B83B7 /* tor_cpaproxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tor_cpaproxy.h; sourceTree = "<group>"; };
 		542FFE951800CA28003B83B7 /* torrc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = torrc; sourceTree = "<group>"; };
 		542FFEA11800CA65003B83B7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		F78C4DD5182B9A5900C6D19C /* CPAHiddenService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPAHiddenService.h; sourceTree = "<group>"; };
+		F78C4DD6182B9A5900C6D19C /* CPAHiddenService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPAHiddenService.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -325,6 +328,8 @@
 				542FFE7F1800CA12003B83B7 /* CPASocketManager.m */,
 				542FFE801800CA12003B83B7 /* CPAThread.h */,
 				542FFE811800CA12003B83B7 /* CPAThread.m */,
+				F78C4DD5182B9A5900C6D19C /* CPAHiddenService.h */,
+				F78C4DD6182B9A5900C6D19C /* CPAHiddenService.m */,
 			);
 			path = CPAProxy;
 			sourceTree = "<group>";
@@ -539,6 +544,7 @@
 				542FFE861800CA12003B83B7 /* CPAThread.m in Sources */,
 				542FFE851800CA12003B83B7 /* CPASocketManager.m in Sources */,
 				542FFE831800CA12003B83B7 /* CPAProxyManager+TorCommands.m in Sources */,
+				F78C4DD7182B9A5900C6D19C /* CPAHiddenService.m in Sources */,
 				542FFE841800CA12003B83B7 /* CPAProxyManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

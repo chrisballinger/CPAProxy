@@ -73,4 +73,6 @@
  */
 @property (nonatomic, copy, readwrite) NSString *geoipPath;
 
+@property (nonatomic, strong, readwrite) NSArray *hiddenServices;
+
 @end
