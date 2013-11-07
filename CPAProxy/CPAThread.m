@@ -61,28 +61,20 @@ const char *kTorArgsValueLogLevel = "notice stderr";
     
     const char * argv[argc];
     
-    argv[0]  = kTorArgsKeyARG0;
-    argv[1]  = kTorArgsKeyDataDirectory;
-    argv[2]  = [dataDir UTF8String];
-    argv[3]  = kTorArgsKeyControlPort;
-    argv[4]  = [controlPort UTF8String];
-    argv[5]  = kTorArgsKeyKeySOCKSPort;
-    argv[6]  = [socksPort UTF8String];
-    argv[7]  = kTorArgsKeyGeoIPFile;
-    argv[8]  = [geoipPath UTF8String];
-    argv[9]  = kTorArgsKeyTorrcFile;
-    argv[10] = [torrcPath UTF8String];
-    argv[11] = kTorArgsKeyLog;
-    argv[12] = kTorArgsValueLogLevel;
+    argv[0] = kTorArgsKeyARG0;
+    argv[1] = kTorArgsKeyDataDirectory; argv[2]  = [dataDir UTF8String];
+    argv[3] = kTorArgsKeyControlPort; argv[4]  = [controlPort UTF8String];
+    argv[5] = kTorArgsKeyKeySOCKSPort; argv[6]  = [socksPort UTF8String];
+    argv[7] = kTorArgsKeyGeoIPFile; argv[8]  = [geoipPath UTF8String];
+    argv[9] = kTorArgsKeyTorrcFile; argv[10] = [torrcPath UTF8String];
+    argv[11] = kTorArgsKeyLog; argv[12] = kTorArgsValueLogLevel;
     
     for (int i = 0; i < self.configuration.hiddenServices.count; i++) {
         CPAHiddenService *service = self.configuration.hiddenServices[i];
-        NSString *virtualPort = [NSString stringWithFormat:@"%lu", (unsigned long)service.virtualPort];
+        NSString *ports = [NSString stringWithFormat:@"%lu %lu", (unsigned long)service.virtualPort, (unsigned long)service.targetPort];
         
-        argv[12 + i + 1] = kTorArgsKeyHiddenServiceDir;
-        argv[12 + i + 2] = [service.dirPath UTF8String];
-        argv[12 + i + 3] = kTorArgsKeyHiddenServicePort;
-        argv[12 + i + 4] = [virtualPort UTF8String];
+        argv[12 + i + 1] = kTorArgsKeyHiddenServiceDir; argv[12 + i + 2] = [service.dirPath UTF8String];
+        argv[12 + i + 3] = kTorArgsKeyHiddenServicePort; argv[12 + i + 4] = [ports UTF8String];
     }
     
 //    const char *argv[] = { 
