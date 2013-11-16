@@ -40,6 +40,41 @@
     return progess;
 }
 
+- (NSString *)cpa_HSStateForResponse:(NSString *)response
+{
+    NSString *progressString = @"HS_STATE=";
+    NSString *hsState;
+    
+    NSScanner *scanner = [NSScanner scannerWithString:response];
+    [scanner scanUpToString:progressString intoString:NULL];
+    
+    BOOL stringFound = [scanner scanString:progressString intoString:NULL];
+    if (stringFound) {
+        NSCharacterSet *endOfPairSet = [NSCharacterSet characterSetWithCharactersInString:@" \n"];
+        [scanner scanUpToCharactersFromSet:endOfPairSet intoString:&hsState];
+    }
+    
+    return hsState;
+}
+
+- (NSString *)cpa_ReasonForResponse:(NSString *)response
+{
+    NSString *progressString = @"PURPOSE=";
+    NSString *reason;
+    
+    NSScanner *scanner = [NSScanner scannerWithString:response];
+    [scanner scanUpToString:progressString intoString:NULL];
+    
+    BOOL stringFound = [scanner scanString:progressString intoString:NULL];
+    if (stringFound) {
+        NSCharacterSet *endOfPairSet = [NSCharacterSet characterSetWithCharactersInString:@" \n"];
+        [scanner scanUpToCharactersFromSet:endOfPairSet intoString:&reason];
+    }
+    
+    return reason;
+}
+
+
 - (BOOL)cpa_isAuthenticatedForResponse:(NSString *)response
 {
     if ([response rangeOfString:@"250 OK"].location != NSNotFound) {
@@ -48,5 +83,40 @@
     return NO;
 }
 
+- (BOOL)cpa_isSuccessForResponse:(NSString *)response
+{
+    if ([response hasPrefix:@"250 OK"]) {
+        return YES;
+    }
+    return NO;
+}
+
+- (void)cpa_sendSetEventsRequest {
+    NSString *msgBootstrapInfo = @"SETEVENTS EXTENDED CIRC\n";
+    [self.socketManager writeString:msgBootstrapInfo encoding:NSUTF8StringEncoding];
+}
+
+- (void)cpa_sendSetEventsCancel {
+    NSString *msgBootstrapInfo = @"SETEVENTS EXTENDED\n";
+    [self.socketManager writeString:msgBootstrapInfo encoding:NSUTF8StringEncoding];
+}
+
+- (CPACircuit *)cpa_circuitForResponse:(NSString *)response {
+    NSString *header = @"650 CIRC ";
+    CPACircuit *circuit;
+    
+    
+    if ([response hasPrefix:header]) {
+        NSString *body = [response stringByReplacingOccurrencesOfString:@"650 CIRC " withString:@""];
+        NSArray *params = [body componentsSeparatedByString:@" "];
+        if (params.count >= 2) {
+            circuit = [[CPACircuit alloc] init];
+            circuit.circuitID = params[0];
+            circuit.circStatus = params[1];
+        }
+    }
+    
+    return circuit;
+}
 
 @end

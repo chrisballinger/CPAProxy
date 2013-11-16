@@ -5,6 +5,7 @@
 //
 
 #import "CPAProxyManager.h"
+#import "CPACircuit.h"
 
 /**
  This category adds methods to `CPAProxyManager` to send Tor control requests and process the responses.
@@ -38,5 +39,13 @@
  @return YES if the authenticate response was positive, otherwise NO.
  */
 - (BOOL)cpa_isAuthenticatedForResponse:(NSString *)response;
+
+- (BOOL)cpa_isSuccessForResponse:(NSString *)response;
+- (void)cpa_sendSetEventsRequest;
+- (void)cpa_sendSetEventsCancel;
+
+- (NSString *)cpa_HSStateForResponse:(NSString *)response;
+- (NSString *)cpa_ReasonForResponse:(NSString *)response;
+- (CPACircuit *)cpa_circuitForResponse:(NSString *)response;
 
 @end

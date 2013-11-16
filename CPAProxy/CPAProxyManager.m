@@ -40,6 +40,12 @@ typedef NS_ENUM(NSUInteger, CPAStatus) {
     CPAStatusOpen
 };
 
+typedef NS_ENUM(NSUInteger, CPASetEventsStatus) {
+    CPASetEventsStatusNoEventsSet = 0,
+    CPASetEventsStatusRequested,
+    CPASetEventsStatusAccepted
+};
+
 @interface CPAProxyManager () <CPASocketManagerDelegate>
 @property (nonatomic, strong, readwrite) CPASocketManager *socketManager;
 @property (nonatomic, strong, readwrite) CPAConfiguration *configuration;
@@ -51,6 +57,7 @@ typedef NS_ENUM(NSUInteger, CPAStatus) {
 @property (nonatomic, copy, readwrite) CPAFailureBlock failureBlock;
 
 @property (nonatomic, readwrite) CPAStatus status;
+@property (nonatomic, readwrite) CPASetEventsStatus eventStatus;
 @end
 
 @implementation CPAProxyManager
@@ -146,8 +153,23 @@ typedef NS_ENUM(NSUInteger, CPAStatus) {
 {
     if(self.status == CPAStatusConnecting) {
         [self handleInitialAuthenticateResponse:response];
-    } else if(self.status == CPAStatusAuthenticated) {
+    }
+    
+    if(self.status == CPAStatusAuthenticated) {
         [self handleInitialBoostrapProgressResponse:response];
+    }
+    
+    if (self.status == CPAStatusBootstrapDone) {
+        if (self.eventStatus == CPASetEventsStatusRequested) { // SETEVENTS requested handling 250 OK
+            [self handleSetEventSuccessResponse:response];
+        }
+        
+        if (self.eventStatus == CPASetEventsStatusAccepted) { // SETEVENTS already accepted so handling actual HS status
+            NSArray *responses = [[response stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\r\n"]] componentsSeparatedByString:@"\r\n"];
+            for (NSString *r in responses) {
+                [self handleHiddenServiceEventResponse:r];
+            }
+        }
     }
 }
 
@@ -190,6 +212,40 @@ typedef NS_ENUM(NSUInteger, CPAStatus) {
     }
 }
 
+- (void)handleSetEventSuccessResponse:(NSString *)response
+{
+    BOOL success = [self cpa_isSuccessForResponse:response];
+    
+    if (success) {
+        self.eventStatus = CPASetEventsStatusAccepted;
+    }
+}
+
+- (void)handleHiddenServiceEventResponse:(NSString *)response
+{
+    NSString *hsState = [self cpa_HSStateForResponse:response];
+    BOOL serverHS = [hsState hasPrefix:@"HSSI"]; // connecting to intro point
+    
+    if (serverHS) {
+        CPACircuit *circuit = [self cpa_circuitForResponse:response];
+        if ([circuit.circStatus isEqualToString:@"BUILT"]) {
+            // got at least one entry point
+            // connection established
+            [self cpa_sendSetEventsCancel]; //canceling event
+            NSLog(@"---- Connection to Intro point established with circuit: %@.", circuit);
+            
+            if (self.hiddenServiceBlock) {
+                self.hiddenServiceBlock();
+            }
+        }
+    }
+}
+
+- (void)requestSetEvents {
+    self.eventStatus = CPASetEventsStatusRequested;
+    [self cpa_sendSetEventsRequest];
+}
+
 - (void)handleInitialBoostrapProgressResponse:(NSString *)response
 {
     NSInteger progress = [self cpa_boostrapProgressForResponse:response];
@@ -207,6 +263,9 @@ typedef NS_ENUM(NSUInteger, CPAStatus) {
         
         NSString *socksHost = self.configuration.socksHost;
         NSUInteger socksPort = self.configuration.socksPort;
+        
+        [self requestSetEvents];
+        
         if (self.successBlock) {
             self.successBlock(socksHost, socksPort);
         }
