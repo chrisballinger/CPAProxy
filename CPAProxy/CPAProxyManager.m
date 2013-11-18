@@ -224,18 +224,34 @@ typedef NS_ENUM(NSUInteger, CPASetEventsStatus) {
 - (void)handleHiddenServiceEventResponse:(NSString *)response
 {
     NSString *hsState = [self cpa_HSStateForResponse:response];
-    BOOL serverHS = [hsState hasPrefix:@"HSSI"]; // connecting to intro point
+    BOOL isHSSI = [hsState hasPrefix:@"HSSI"]; // connecting to intro point
+    BOOL isHSSR = [hsState hasPrefix:@"HSSR"];
     
-    if (serverHS) {
+    if (isHSSI) {
         CPACircuit *circuit = [self cpa_circuitForResponse:response];
         if ([circuit.circStatus isEqualToString:@"BUILT"]) {
             // got at least one entry point
             // connection established
-            [self cpa_sendSetEventsCancel]; //canceling event
+            //[self cpa_sendSetEventsCancel]; //canceling event
             NSLog(@"---- Connection to Intro point established with circuit: %@.", circuit);
             
-            if (self.hiddenServiceBlock) {
-                self.hiddenServiceBlock();
+            if (self.didConnectedToIntroBlock) {
+                self.didConnectedToIntroBlock();
+            }
+        }
+    }
+    
+    if (isHSSR) {
+        CPACircuit *circuit = [self cpa_circuitForResponse:response];
+
+        if ([circuit.circStatus isEqualToString:@"BUILT"]) {
+            // got at least one entry point
+            // connection established
+            [self cpa_sendSetEventsCancel]; //canceling event
+            NSLog(@"---- Connection to Rendezvous point established with circuit: %@.", circuit);
+            
+            if (self.didConnectedToRendezvousBlock) {
+                self.didConnectedToRendezvousBlock();
             }
         }
     }

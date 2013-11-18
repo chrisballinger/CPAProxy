@@ -18,7 +18,8 @@
  If the authentication has succeded, the `CPAProxyManager` starts sending "GETINFO status/bootstrap-phase" messages to poll for the boostrap progress of the Tor client. When the response "BOOTSTRAP PROGRESS=100" has been received, the client is considered to have been successfully setup and the SOCKS proxy is ready to be used.
  */
 
-typedef void (^CPAProxyManagerHiddenServiceConnectedBlock)();
+typedef void (^CPAProxyManagerHiddenServiceConnectedToIntroBlock)();
+typedef void (^CPAProxyManagerHiddenServiceConnectedToRendezvousBlock)();
 
 @interface CPAProxyManager : NSObject
 
@@ -48,7 +49,8 @@ typedef void (^CPAProxyManagerHiddenServiceConnectedBlock)();
 @property (nonatomic, strong, readonly) CPASocketManager *socketManager;
 
 
-@property (nonatomic, copy, readwrite) CPAProxyManagerHiddenServiceConnectedBlock hiddenServiceBlock;
+@property (nonatomic, copy, readwrite) CPAProxyManagerHiddenServiceConnectedToIntroBlock didConnectedToIntroBlock;
+@property (nonatomic, copy, readwrite) CPAProxyManagerHiddenServiceConnectedToRendezvousBlock didConnectedToRendezvousBlock;
 
 /**
  Creates and returns an instance of `CPAProxyManager` with the specified configuration.
